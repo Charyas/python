@@ -4,7 +4,15 @@ import socket
 from socket import *
 from threading import *
 
+import nmap
+
 screenLock = Semaphore(value=1)
+
+def nmapScan(tgtHost, tgtPort):
+	nmScan = nmap.PortScanner()
+	nmScan.scan(tgtHost, tgtPort)
+	state = nmScan[tgtHost]['tcp'][int(tgtPort)]['state']
+	print '[*] ' + tgtHost + "Tcp/" + tgtPort + " " + state
 
 def connScan(tgtHost, tgtPort):
 	try:
@@ -53,8 +61,10 @@ def main():
 	if (tgtHost == None) | (tgtPorts[0] == None):
 		print parser.usage
 		exit(0)
-	print tgtPorts
-	portScan(tgtHost, tgtPorts)
+	# print tgtPorts
+	# portScan(tgtHost, tgtPorts)
+	for tgtPort in tgtPorts:
+		nmapScan(tgtHost, tgtPort)
 
 if __name__ == '__main__':
 	main()
