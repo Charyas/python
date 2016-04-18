@@ -4,6 +4,7 @@ import socket
 import urllib2
 import gzip
 import requests
+import re
 # get user free ip from
 #
 #
@@ -33,6 +34,13 @@ def checkProxy(host, port):
 	except Exception,e:
 		return False
 
+def valid_ip(self, text):
+	   pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+	   if re.match(pattern, text):
+	      return True
+	   else:
+	      return False
+
 def checkip(proxy):
 	handle = urllib2.ProxyHandler({'http':proxy})
 	opener = urllib2.build_opener(handle,urllib2.HTTPHandler)
@@ -45,7 +53,7 @@ def checkip(proxy):
 		return False
 	except Exception,e:
 		return False
-from StringIO import StringIO
+
 def getyoudaili():
 	url = 'http://www.youdaili.net/Daili/guonei/4343.html'
 	r = requests.get(url)
@@ -53,8 +61,18 @@ def getyoudaili():
 	pos2 = r.content.find('<div class="dede_pages">')
 	print pos1,pos2
 
-	new = r.content[pos1:pos2]
-	print new
+	content = r.content[pos1+len('<p><span style="font-size:14px;">'):pos2-5].split('\n')
+	for line in content:
+		pos = line.find('@')
+		if pos < 0:
+			continue
+		line = line[:pos]
+		if checkip(line):
+			fp.write(line + '\n')
 
 if __name__ == '__main__':
+	global fp
+	fp = open("aaa.txt", "w+")
 	getyoudaili()
+
+	fp.close()
