@@ -55,8 +55,11 @@ def checkip(proxy):
 		return False
 
 def getyoudaili():
-	url = 'http://www.youdaili.net/Daili/guonei/4343.html'
+	url = 'http://www.youdaili.net/Daili/guonei'
 	r = requests.get(url)
+	print r.content
+	# get all ip data page
+	return
 	pos1 = r.content.find('<p><span style="font-size:14px;">')
 	pos2 = r.content.find('<div class="dede_pages">')
 	print pos1,pos2
